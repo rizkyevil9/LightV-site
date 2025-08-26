@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LightV</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: #fff;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        h1 {
+            font-size: 3em;
+            margin: 0;
+            animation: fadeIn 2s ease;
+        }
+        p {
+            font-size: 1.2em;
+            margin: 10px 0 30px;
+        }
+        .social-links a {
+            margin: 0 10px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.5em;
+            transition: 0.3s;
+        }
+        .social-links a:hover {
+            color: #00ffcc;
+        }
+        .coming-soon {
+            margin-top: 40px;
+            font-size: 1.3em;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1;}
+            50% { opacity: 0.5;}
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to LightV</h1>
+    <p>This is my official site. Stay tuned for updates!</p>
+
+    <!-- Portfolio Links -->
+    <div class="social-links">
+        <a href="https://github.com/username" target="_blank">GitHub</a>
+        <a href="https://instagram.com/username" target="_blank">Instagram</a>
+        <a href="mailto:yourmail@example.com">Email</a>
+    </div>
+
+    <!-- Coming Soon Section -->
+    <div class="coming-soon">🚀 Coming Soon 🚀</div>
+</body>
+</html>
