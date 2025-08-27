@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Light V - Personal Website</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header & Navigation */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            animation: fadeDown 1s ease;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(45deg, #ff6b6b, #ffa86b, #ffda6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav ul li {
+            margin-left: 30px;
+        }
+
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        nav ul li a:hover {
+            color: #ff6b6b;
+        }
+
+        nav ul li a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background: linear-gradient(45deg, #ff6b6b, #ffa86b);
+            transition: width 0.3s ease;
+        }
+
+        nav ul li a:hover::after {
+            width: 100%;
+        }
+
+        /* Hero Section */
+        .hero {
+            display: flex;
+            align-items: center;
+            min-height: 80vh;
+            padding: 40px 0;
+        }
+
+        .hero-content {
+            flex: 1;
+            animation: slideLeft 1s ease;
+        }
+
+        .hero-image {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            animation: slideRight 1s ease;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .hero h1 span {
+            background: linear-gradient(45deg, #ff6b6b, #ffa86b, #ffda6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            color: #e2e2e2;
+            max-width: 500px;
+            line-height: 1.6;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(45deg, #ff6b6b, #ffa86b);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.6);
+        }
+
+        .image-placeholder {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ff6b6b, #ffa86b);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(255, 107, 107, 0.3);
+        }
+
+        .image-placeholder::before {
+            content: '';
+            position: absolute;
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+        }
+
+        .image-placeholder i {
+            font-size: 80px;
+            color: #ffa86b;
+            z-index: 1;
+            animation: pulse 2s infinite;
+        }
+
+        /* About Section */
+        .about {
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(45deg, #ff6b6b, #ffa86b);
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+        .about-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 40px;
+        }
+
+        .about-text {
+            flex: 1;
+            min-width: 300px;
+            text-align: left;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            animation: fadeUp 1s ease;
+        }
+
+        .about-text p {
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .social-links a {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ff6b6b, #ffa86b);
+            color: white;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .social-links a:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        /* Skills Section */
+        .skills {
+            padding: 80px 0;
+        }
+
+        .skills-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+
+        .skill {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            flex: 1;
+            min-width: 250px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            animation: fadeUp 1s ease;
+        }
+
+        .skill:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .skill i {
+            font-size: 40px;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #ff6b6b, #ffa86b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .skill h3 {
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        /* Music Player */
+        .music-player {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .play-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ff6b6b, #ffa86b);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
+        }
+
+        .play-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .music-status {
+            position: absolute;
+            bottom: 70px;
+            right: 0;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            backdrop-filter: blur(10px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .play-btn:hover + .music-status {
+            opacity: 1;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            margin-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Animations */
+        @keyframes fadeDown {
+            0% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideLeft {
+            0% {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideRight {
+            0% {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeUp {
+            0% {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 10px 25px rgba(255, 107, 107, 0.6);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .hero-content {
+                margin-bottom: 40px;
+            }
+            
+            .hero p {
+                margin: 0 auto 30px;
+            }
+            
+            nav ul {
+                display: none;
+            }
+            
+            .about-content {
+                flex-direction: column;
+            }
+            
+            .about-text {
+                text-align: center;
+            }
+            
+            .social-links {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">Light V</div>
+            <nav>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#about">Tentang</a></li>
+                    <li><a href="#skills">Keahlian</a></li>
+                    <li><a href="#contact">Kontak</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <section class="hero" id="home">
+            <div class="hero-content">
+                <h1>Hai, Saya <span>Light V</span></h1>
+                <p>Seorang konten kreator dan entertainer di platform TikTok. Saya suka membuat konten yang menghibur dan menginspirasi orang lain.</p>
+                <a href="https://www.tiktok.com/@lightv" target="_blank" class="btn">Follow Saya di TikTok</a>
+            </div>
+            <div class="hero-image">
+                <div class="image-placeholder">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+        </section>
+
+        <section class="about" id="about">
+            <h2 class="section-title">Tentang Saya</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>Hai! Saya Light V, seorang kreator konten dengan passion di bidang entertainment. Saya telah membuat berbagai jenis konten di TikTok yang bertujuan untuk menghibur dan menginspirasi penonton.</p>
+                    <p>Dengan gaya yang unik dan kreatif, saya berusaha memberikan konten terbaik untuk followers saya. Setiap hari adalah kesempatan baru untuk membuat konten yang lebih baik dan lebih engaging.</p>
+                    <p>Selain membuat konten, saya juga tertarik dengan teknologi, desain, dan pengembangan web. Saya selalu bersemangat untuk mempelajari hal-hal baru dan mengembangkan skill saya.</p>
+                    
+                    <div class="social-links">
+                        <a href="https://www.tiktok.com/@lightv" target="_blank"><i class="fab fa-tiktok"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="skills" id="skills">
+            <h2 class="section-title">Keahlian Saya</h2>
+            <div class="skills-container">
+                <div class="skill">
+                    <i class="fas fa-video"></i>
+                    <h3>Konten Kreator</h3>
+                    <p>Membuat konten video yang menarik dan menghibur untuk platform TikTok</p>
+                </div>
+                <div class="skill">
+                    <i class="fas fa-paint-brush"></i>
+                    <h3>Editing Video</h3>
+                    <p>Mengedit video dengan efek khusus dan transisi yang menarik</p>
+                </div>
+                <div class="skill">
+                    <i class="fas fa-music"></i>
+                    <h3>Entertainment</h3>
+                    <p>Menghibur penonton dengan konten yang fresh dan kreatif</p>
+                </div>
+            </div>
+        </section>
+
+        <footer id="contact">
+            <p>© 2023 Light V. All Rights Reserved.</p>
+        </footer>
+    </div>
+
+    <!-- Music Player -->
+    <div class="music-player">
+        <div class="play-btn" id="playButton">
+            <i class="fas fa-play"></i>
+        </div>
+        <div class="music-status">Musik Dimatikan</div>
+    </div>
+
+    <audio id="bgMusic" loop>
+        <source src="musik.mp3" type="audio/mp3">
+        Browser Anda tidak mendukung elemen audio.
+    </audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const playButton = document.getElementById('playButton');
+            const bgMusic = document.getElementById('bgMusic');
+            const musicStatus = document.querySelector('.music-status');
+            let isPlaying = false;
+
+            playButton.addEventListener('click', function() {
+                if (isPlaying) {
+                    bgMusic.pause();
+                    playButton.innerHTML = '<i class="fas fa-play"></i>';
+                    musicStatus.textContent = 'Musik Dimatikan';
+                    isPlaying = false;
+                } else {
+                    bgMusic.play();
+                    playButton.innerHTML = '<i class="fas fa-pause"></i>';
+                    musicStatus.textContent = 'Musik Diputar';
+                    isPlaying = true;
+                }
+            });
+
+            // Animasi saat scrolling
+            const animateOnScroll = function() {
+                const elements = document.querySelectorAll('.skill, .about-text');
+                
+                elements.forEach(element => {
+                    const position = element.getBoundingClientRect();
+                    
+                    if(position.top < window.innerHeight - 100) {
+                        element.style.opacity = 1;
+                        element.style.transform = 'translateY(0)';
+                    }
+                });
+            };
+
+            // Set initial state for animated elements
+            document.querySelectorAll('.skill, .about-text').forEach(element => {
+                element.style.opacity = 0;
+                element.style.transform = 'translateY(50px)';
+                element.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            });
+
+            window.addEventListener('scroll', animateOnScroll);
+            // Trigger once on load
+            animateOnScroll();
+        });
+    </script>
+</body>
+</html>
