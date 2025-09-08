@@ -82,7 +82,7 @@ async function generateImage() {
     const payload = {
         contents: [{
             parts: [
-                { text: `INSTRUCTION: Return only the edited image file with no additional text or description. USER_PROMPT: ${promptInput.value}` },
+                { text: `INSTRUCTION: Return only the edited image file with no additional text or description. If you must return a URL, return ONLY the URL and nothing else. USER_PROMPT: ${promptInput.value}` },
                 {
                     inlineData: {
                         mimeType: uploadedImageType,
@@ -91,14 +91,6 @@ async function generateImage() {
                 }
             ]
         }],
-        // BAGIAN INI DIHAPUS KARENA MENYEBABKAN ERROR
-        // Model 'gemini-1.5-flash' tidak mendukung `responseMimeType` untuk gambar.
-        // Hasil gambar akan tetap dikembalikan dalam format JSON standar.
-        /*
-        generationConfig: {
-            "responseMimeType": "image/png"
-        },
-        */
         safetySettings: [
             { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
             { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
@@ -116,7 +108,6 @@ async function generateImage() {
 
         if (!response.ok) {
             const errorData = await response.json();
-            // Cek untuk pesan error yang lebih spesifik
             const specificError = errorData?.error?.message || `HTTP error! status: ${response.status}`;
             throw new Error(specificError);
         }
@@ -133,19 +124,40 @@ async function generateImage() {
         const candidate = result.candidates[0];
         const part = candidate.content?.parts?.[0];
 
+        let imageFound = false;
+
+        // **PRIORITAS 1: Cek apakah ada data gambar langsung (base64)**
         if (part && part.inlineData && part.inlineData.data) {
             resultImage.src = `data:image/png;base64,${part.inlineData.data}`;
+            imageFound = true;
+        
+        // **PRIORITAS 2: Jika tidak ada, cek apakah ada URL gambar di dalam TEKS balasan**
+        } else if (part && part.text) {
+            // Regex untuk menemukan URL gambar (http/https, diakhiri .png/jpg/jpeg/webp, bisa di dalam kurung markdown)
+            const urlRegex = /(https?:\/\/[^\s)]+\.(?:png|jpg|jpeg|webp))/i;
+            const match = part.text.match(urlRegex);
+
+            // Jika URL ditemukan di dalam teks...
+            if (match && match[0]) {
+                resultImage.src = match[0]; // Langsung gunakan URL yang ditemukan
+                imageFound = true;
+            }
+        }
+        
+        // Logika Tampilan Hasil
+        if (imageFound) {
             resultImage.classList.remove('hidden');
             placeholderText.classList.add('hidden');
             hideError();
         } else {
-            let reasonText = "Tidak dapat menemukan data gambar dalam respons API.";
+            // Jika tidak ada gambar sama sekali, tampilkan pesan error
+            let reasonText = "Tidak dapat menemukan data gambar atau URL dalam respons API.";
             if (candidate.finishReason === "SAFETY") {
                 reasonText = "Gambar tidak dapat dibuat karena melanggar kebijakan keamanan.";
             } else if (candidate.finishReason) {
                 reasonText = `Proses dihentikan karena: ${candidate.finishReason}.`;
             }
-            // Jika ada teks balasan dari AI, tampilkan itu
+            // Jika ada teks balasan dari AI, tampilkan itu sebagai alasan
             if (part && part.text) {
                  reasonText = `AI merespons dengan pesan: "${part.text}"`;
             }
