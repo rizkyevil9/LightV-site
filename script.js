@@ -79,10 +79,14 @@ async function generateImage() {
     const model = "gemini-1.5-flash";
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
+    // --- PERUBAHAN UTAMA ADA DI SINI ---
+    // Prompt ini dibuat sangat tegas untuk memaksa AI mengembalikan HANYA gambar.
+    const strictPrompt = `SYSTEM INSTRUCTION: You are an image editing API. Your ONLY output MUST be the raw, edited image file based on the user's request. DO NOT output text, descriptions, apologies, or URLs. DO NOT use Markdown. Directly output the edited image. USER_PROMPT: ${promptInput.value}`;
+
     const payload = {
         contents: [{
             parts: [
-                { text: `INSTRUCTION: Return only the edited image file with no additional text or description. If you must return a URL, return ONLY the URL and nothing else. USER_PROMPT: ${promptInput.value}` },
+                { text: strictPrompt },
                 {
                     inlineData: {
                         mimeType: uploadedImageType,
@@ -124,42 +128,19 @@ async function generateImage() {
         const candidate = result.candidates[0];
         const part = candidate.content?.parts?.[0];
 
-        let imageFound = false;
-
-        // **PRIORITAS 1: Cek apakah ada data gambar langsung (base64)**
+        // **Logika disederhanakan: HANYA terima inlineData.**
         if (part && part.inlineData && part.inlineData.data) {
             resultImage.src = `data:image/png;base64,${part.inlineData.data}`;
-            imageFound = true;
-        
-        // **PRIORITAS 2: Jika tidak ada, cek apakah ada URL gambar di dalam TEKS balasan**
-        } else if (part && part.text) {
-            // Regex untuk menemukan URL gambar (http/https, diakhiri .png/jpg/jpeg/webp, bisa di dalam kurung markdown)
-            const urlRegex = /(https?:\/\/[^\s)]+\.(?:png|jpg|jpeg|webp))/i;
-            const match = part.text.match(urlRegex);
-
-            // Jika URL ditemukan di dalam teks...
-            if (match && match[0]) {
-                resultImage.src = match[0]; // Langsung gunakan URL yang ditemukan
-                imageFound = true;
-            }
-        }
-        
-        // Logika Tampilan Hasil
-        if (imageFound) {
             resultImage.classList.remove('hidden');
             placeholderText.classList.add('hidden');
             hideError();
         } else {
-            // Jika tidak ada gambar sama sekali, tampilkan pesan error
-            let reasonText = "Tidak dapat menemukan data gambar atau URL dalam respons API.";
-            if (candidate.finishReason === "SAFETY") {
-                reasonText = "Gambar tidak dapat dibuat karena melanggar kebijakan keamanan.";
-            } else if (candidate.finishReason) {
-                reasonText = `Proses dihentikan karena: ${candidate.finishReason}.`;
-            }
-            // Jika ada teks balasan dari AI, tampilkan itu sebagai alasan
+            // Jika AI tetap membalas dengan teks (melanggar instruksi), kita tampilkan sebagai error.
+            let reasonText = "AI gagal menghasilkan gambar. Coba perintah lain atau gambar lain.";
             if (part && part.text) {
-                 reasonText = `AI merespons dengan pesan: "${part.text}"`;
+                 reasonText = `AI merespons dengan pesan (bukan gambar): "${part.text}"`;
+            } else if (candidate.finishReason === "SAFETY") {
+                reasonText = "Gambar tidak dapat dibuat karena melanggar kebijakan keamanan.";
             }
             showError(reasonText);
         }
