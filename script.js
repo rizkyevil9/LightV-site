@@ -1,3 +1,65 @@
+// Hapus semua kode lama Anda di script.js dan ganti dengan ini.
+
+const imageUpload = document.getElementById('image-upload');
+const imagePreviewContainer = document.getElementById('image-preview-container');
+const imagePreview = document.getElementById('image-preview');
+const promptInput = document.getElementById('prompt-input');
+const generateBtn = document.getElementById('generate-btn');
+const loading = document.getElementById('loading');
+const resultContainer = document.getElementById('result-container');
+const resultImage = document.getElementById('result-image');
+const placeholderText = document.getElementById('placeholder-text');
+const errorMessage = document.getElementById('errorMessage');
+const errorText = document.getElementById('errorText');
+
+let uploadedImageBase64 = null;
+let uploadedImageType = null;
+
+// --- Event Listeners ---
+imageUpload.addEventListener('change', handleImageUpload);
+generateBtn.addEventListener('click', generateImage);
+
+// --- Functions ---
+function handleImageUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+        showError('Tipe file tidak valid. Harap unggah PNG, JPG, atau WEBP.');
+        return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+        showError('Ukuran file terlalu besar. Maksimal 10MB.');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        imagePreview.src = e.target.result;
+        imagePreviewContainer.classList.remove('hidden');
+        
+        uploadedImageBase64 = e.target.result.split(',')[1];
+        uploadedImageType = file.type;
+        hideError();
+
+        const uploadLabel = document.querySelector('label[for="image-upload"]');
+        imageUpload.disabled = true;
+
+        if (uploadLabel) {
+            uploadLabel.style.cursor = 'not-allowed';
+            uploadLabel.style.backgroundColor = '#2d3748';
+            uploadLabel.style.borderColor = '#4a5568';
+            
+            const textElement = uploadLabel.querySelector('span.text-sm');
+            if(textElement) {
+               textElement.textContent = 'Gambar berhasil diunggah';
+            }
+        }
+    };
+    reader.readAsDataURL(file);
+}
+
 async function generateImage() {
     if (!uploadedImageBase64) {
         showError('Harap unggah gambar terlebih dahulu.');
@@ -64,8 +126,6 @@ async function generateImage() {
         const candidate = result.candidates[0];
         const part = candidate.content?.parts?.[0];
 
-        // --- LOGIKA BARU YANG LEBIH CERDAS ---
-
         // Prioritas 1: Cek apakah ada data gambar langsung (base64)
         if (part && part.inlineData && part.inlineData.data) {
             resultImage.src = `data:image/png;base64,${part.inlineData.data}`;
@@ -108,4 +168,25 @@ async function generateImage() {
     } finally {
         setLoading(false);
     }
+}
+
+function setLoading(isLoading) {
+    if (isLoading) {
+        generateBtn.disabled = true;
+        loading.classList.remove('hidden');
+        resultContainer.classList.add('hidden');
+    } else {
+        generateBtn.disabled = false;
+        loading.classList.add('hidden');
+        resultContainer.classList.remove('hidden');
+    }
+}
+
+function showError(message) {
+    errorText.textContent = message;
+    errorMessage.classList.remove('hidden');
+}
+
+function hideError() {
+    errorMessage.classList.add('hidden');
 }
