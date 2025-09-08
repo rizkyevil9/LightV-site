@@ -1,4 +1,4 @@
-// Hapus semua kode lama Anda di script.js dan ganti dengan ini.
+// File: script.js - Versi Generator Caption
 
 const imageUpload = document.getElementById('image-upload');
 const imagePreviewContainer = document.getElementById('image-preview-container');
@@ -7,27 +7,19 @@ const promptInput = document.getElementById('prompt-input');
 const generateBtn = document.getElementById('generate-btn');
 const loading = document.getElementById('loading');
 const resultContainer = document.getElementById('result-container');
-const resultImage = document.getElementById('result-image');
-const placeholderText = document.getElementById('placeholder-text');
+const resultText = document.getElementById('result-text'); 
 const errorMessage = document.getElementById('errorMessage');
 const errorText = document.getElementById('errorText');
 
 let uploadedImageBase64 = null;
 let uploadedImageType = null;
 
-// --- Event Listeners ---
 imageUpload.addEventListener('change', handleImageUpload);
 generateBtn.addEventListener('click', generateImage);
 
-// --- Functions ---
 function handleImageUpload(event) {
     const file = event.target.files[0];
     if (!file) return;
-
-    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
-        showError('Tipe file tidak valid. Harap unggah PNG, JPG, atau WEBP.');
-        return;
-    }
 
     if (file.size > 10 * 1024 * 1024) {
         showError('Ukuran file terlalu besar. Maksimal 10MB.');
@@ -38,23 +30,14 @@ function handleImageUpload(event) {
     reader.onload = (e) => {
         imagePreview.src = e.target.result;
         imagePreviewContainer.classList.remove('hidden');
-        
         uploadedImageBase64 = e.target.result.split(',')[1];
         uploadedImageType = file.type;
-        hideError();
-
         const uploadLabel = document.querySelector('label[for="image-upload"]');
         imageUpload.disabled = true;
-
         if (uploadLabel) {
             uploadLabel.style.cursor = 'not-allowed';
             uploadLabel.style.backgroundColor = '#2d3748';
-            uploadLabel.style.borderColor = '#4a5568';
-            
-            const textElement = uploadLabel.querySelector('span.text-sm');
-            if(textElement) {
-               textElement.textContent = 'Gambar berhasil diunggah';
-            }
+            uploadLabel.querySelector('span.text-sm').textContent = 'Gambar berhasil diunggah';
         }
     };
     reader.readAsDataURL(file);
@@ -65,34 +48,31 @@ async function generateImage() {
         showError('Harap unggah gambar terlebih dahulu.');
         return;
     }
-    if (!promptInput.value.trim()) {
-        showError('Harap masukkan perintah editan.');
-        return;
-    }
 
     setLoading(true);
     hideError();
-    resultImage.classList.add('hidden');
-    placeholderText.classList.remove('hidden');
+    resultText.textContent = "";
 
     const apiKey = "AIzaSyBA3d4XreZ_u0arABPI-eJXO55roSaNfrw"; // Ganti dengan API Key Anda
     const model = "gemini-1.5-flash";
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
     // --- PERUBAHAN UTAMA ADA DI SINI ---
-    // Prompt ini dibuat sangat tegas untuk memaksa AI mengembalikan HANYA gambar.
-    const strictPrompt = `SYSTEM INSTRUCTION: You are an image editing API. Your ONLY output MUST be the raw, edited image file based on the user's request. DO NOT output text, descriptions, apologies, or URLs. DO NOT use Markdown. Directly output the edited image. USER_PROMPT: ${promptInput.value}`;
+    const captionStyle = promptInput.value.trim();
+    
+    // Prompt ini secara spesifik meminta AI untuk menjadi manajer media sosial
+    let finalPrompt = `You are a professional social media manager. Analyze the uploaded image and generate 3 creative and engaging caption options for an Instagram post. Make sure to include relevant and popular hashtags for each option. The response should be well-formatted.`;
+
+    // Jika pengguna memasukkan gaya, tambahkan ke prompt
+    if (captionStyle) {
+        finalPrompt += ` The user has requested a specific style: "${captionStyle}". Please adhere to this style.`;
+    }
 
     const payload = {
         contents: [{
             parts: [
-                { text: strictPrompt },
-                {
-                    inlineData: {
-                        mimeType: uploadedImageType,
-                        data: uploadedImageBase64
-                    }
-                }
+                { text: finalPrompt },
+                { inlineData: { mimeType: uploadedImageType, data: uploadedImageBase64 } }
             ]
         }],
         safetySettings: [
@@ -112,35 +92,20 @@ async function generateImage() {
 
         if (!response.ok) {
             const errorData = await response.json();
-            const specificError = errorData?.error?.message || `HTTP error! status: ${response.status}`;
-            throw new Error(specificError);
+            throw new Error(errorData?.error?.message || `HTTP error! status: ${response.status}`);
         }
 
         const result = await response.json();
-        
-        if (!result.candidates || result.candidates.length === 0) {
-            if (result.promptFeedback && result.promptFeedback.blockReason) {
-                throw new Error(`Permintaan Anda diblokir karena: ${result.promptFeedback.blockReason}. Coba perintah lain.`);
-            }
-            throw new Error("API tidak memberikan respons kandidat yang valid.");
-        }
+        const candidate = result.candidates?.[0];
+        const part = candidate?.content?.parts?.[0];
 
-        const candidate = result.candidates[0];
-        const part = candidate.content?.parts?.[0];
-
-        // **Logika disederhanakan: HANYA terima inlineData.**
-        if (part && part.inlineData && part.inlineData.data) {
-            resultImage.src = `data:image/png;base64,${part.inlineData.data}`;
-            resultImage.classList.remove('hidden');
-            placeholderText.classList.add('hidden');
+        if (part && part.text) {
+            resultText.textContent = part.text;
             hideError();
         } else {
-            // Jika AI tetap membalas dengan teks (melanggar instruksi), kita tampilkan sebagai error.
-            let reasonText = "AI gagal menghasilkan gambar. Coba perintah lain atau gambar lain.";
-            if (part && part.text) {
-                 reasonText = `AI merespons dengan pesan (bukan gambar): "${part.text}"`;
-            } else if (candidate.finishReason === "SAFETY") {
-                reasonText = "Gambar tidak dapat dibuat karena melanggar kebijakan keamanan.";
+            let reasonText = "API tidak memberikan respons teks yang valid.";
+            if (candidate?.finishReason) {
+                reasonText += ` Alasan: ${candidate.finishReason}`;
             }
             showError(reasonText);
         }
