@@ -91,9 +91,14 @@ async function generateImage() {
                 }
             ]
         }],
+        // BAGIAN INI DIHAPUS KARENA MENYEBABKAN ERROR
+        // Model 'gemini-1.5-flash' tidak mendukung `responseMimeType` untuk gambar.
+        // Hasil gambar akan tetap dikembalikan dalam format JSON standar.
+        /*
         generationConfig: {
             "responseMimeType": "image/png"
         },
+        */
         safetySettings: [
             { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
             { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
@@ -111,53 +116,38 @@ async function generateImage() {
 
         if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(errorData?.error?.message || `HTTP error! status: ${response.status}`);
+            // Cek untuk pesan error yang lebih spesifik
+            const specificError = errorData?.error?.message || `HTTP error! status: ${response.status}`;
+            throw new Error(specificError);
         }
 
         const result = await response.json();
-
+        
         if (!result.candidates || result.candidates.length === 0) {
             if (result.promptFeedback && result.promptFeedback.blockReason) {
                 throw new Error(`Permintaan Anda diblokir karena: ${result.promptFeedback.blockReason}. Coba perintah lain.`);
             }
-            throw new Error("API tidak memberikan respons yang valid.");
+            throw new Error("API tidak memberikan respons kandidat yang valid.");
         }
 
         const candidate = result.candidates[0];
         const part = candidate.content?.parts?.[0];
 
-        // Prioritas 1: Cek apakah ada data gambar langsung (base64)
         if (part && part.inlineData && part.inlineData.data) {
             resultImage.src = `data:image/png;base64,${part.inlineData.data}`;
             resultImage.classList.remove('hidden');
             placeholderText.classList.add('hidden');
             hideError();
-        
-        // Prioritas 2: Jika tidak ada, cek apakah ada TEKS balasan
-        } else if (part && part.text) {
-            // Gunakan regular expression untuk mencari URL gambar di dalam teks
-            const urlRegex = /(https?:\/\/[^\s]+?\.(?:png|jpg|jpeg|webp))/i;
-            const match = part.text.match(urlRegex);
-
-            // Jika URL ditemukan di dalam teks...
-            if (match && match[0]) {
-                const imageUrl = match[0];
-                resultImage.src = imageUrl; // Langsung gunakan URL tersebut
-                resultImage.classList.remove('hidden');
-                placeholderText.classList.add('hidden');
-                hideError();
-            } else {
-                // Jika tidak ada URL, berarti ini benar-benar pesan teks. Tampilkan sebagai error.
-                showError(`AI merespons dengan pesan: "${part.text}"`);
-            }
-        
-        // Prioritas 3: Fallback jika tidak ada data sama sekali
         } else {
-            let reasonText = "Tidak dapat menemukan data gambar atau teks dalam respons API.";
+            let reasonText = "Tidak dapat menemukan data gambar dalam respons API.";
             if (candidate.finishReason === "SAFETY") {
                 reasonText = "Gambar tidak dapat dibuat karena melanggar kebijakan keamanan.";
             } else if (candidate.finishReason) {
                 reasonText = `Proses dihentikan karena: ${candidate.finishReason}.`;
+            }
+            // Jika ada teks balasan dari AI, tampilkan itu
+            if (part && part.text) {
+                 reasonText = `AI merespons dengan pesan: "${part.text}"`;
             }
             showError(reasonText);
         }
