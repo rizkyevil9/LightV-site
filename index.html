@@ -1,60 +1,67 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Social Media Caption Generator</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daftar Anime Populer</title>
+  <style>
+    body {
+      background: #111;
+      color: white;
+      font-family: sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 { text-align: center; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+    }
+    .anime {
+      background: #222;
+      border-radius: 10px;
+      padding: 10px;
+      text-align: center;
+      transition: background 0.3s;
+    }
+    .anime:hover {
+      background: #333;
+    }
+    img {
+      width: 100%;
+      border-radius: 10px;
+    }
+    a {
+      color: white;
+      text-decoration: none;
+    }
+  </style>
 </head>
-<body class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen p-4">
+<body>
+  <h1>Daftar Anime Populer</h1>
+  <div id="anime-list" class="grid">Memuat...</div>
 
-    <div class="w-full max-w-lg">
-        <div class="text-center mb-6">
-            <h1 class="text-4xl font-bold text-slate-100">AI Caption Generator</h1>
-            <p class="text-slate-400 mt-2">Unggah gambar Anda, dan biarkan AI membuatkan caption menarik lengkap dengan hashtagnya!</p>
-        </div>
-
-        <div class="bg-gray-800 border-2 border-dashed border-gray-600 rounded-lg p-6 text-center mb-4">
-            <label for="image-upload" class="cursor-pointer flex flex-col items-center">
-                <svg class="w-10 h-10 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                <span class="text-sm text-slate-300 font-semibold">Klik untuk mengunggah gambar</span>
-                <span class="text-xs text-slate-500">PNG, JPG, WEBP (Maks. 10MB)</span>
-            </label>
-            <input id="image-upload" type="file" class="hidden" accept="image/png, image/jpeg, image/webp">
-        </div>
-
-        <div id="image-preview-container" class="hidden mb-4 text-center">
-            <img id="image-preview" src="#" alt="Pratinjau Gambar" class="max-w-full max-h-64 mx-auto rounded-md">
-        </div>
-
-        <div class="mb-4">
-            <label for="prompt-input" class="block text-sm font-medium text-slate-300 mb-1">Gaya Caption (Opsional)</label>
-            <input type="text" id="prompt-input" class="w-full bg-gray-700 border border-gray-600 rounded-md p-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="contoh: lucu, formal, dengan emoji...">
-        </div>
-
-        <button id="generate-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md transition duration-300">
-            Buat Caption
-        </button>
-
-        <div id="loading" class="hidden text-center my-4">
-            <p class="text-slate-400">AI sedang berpikir... mohon tunggu sebentar.</p>
-        </div>
-        
-        <div id="errorMessage" class="hidden bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded-md my-4">
-            <strong class="font-bold">Oops!</strong>
-            <span id="errorText" class="block sm:inline">Terjadi kesalahan.</span>
-        </div>
-
-        <div id="result-container" class="w-full max-w-lg mt-6 hidden">
-            <h3 class="text-lg font-semibold mb-2 text-slate-300">Hasil Caption dari AI:</h3>
-            <div class="border-2 border-dashed border-gray-600 rounded-lg p-4 bg-gray-800 min-h-[150px]">
-                <p id="result-text" class="text-slate-300"></p>
-            </div>
-        </div>
-
-    </div>
-
-    <script src="script.js"></script>
+  <script>
+    async function loadAnime() {
+      const res = await fetch("https://www.sankavollerei.com/anime/stream/popular");
+      const data = await res.json();
+      const list = data.data || [];
+      const container = document.getElementById("anime-list");
+      container.innerHTML = "";
+      list.forEach(anime => {
+        const div = document.createElement("div");
+        div.className = "anime";
+        div.innerHTML = `
+          <a href="anime.html?slug=${anime.slug}">
+            <img src="${anime.thumbnail}" alt="${anime.title}">
+            <h3>${anime.title}</h3>
+          </a>
+        `;
+        container.appendChild(div);
+      });
+    }
+    loadAnime();
+  </script>
 </body>
 </html>
