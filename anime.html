@@ -12,8 +12,17 @@
       margin: 0;
       padding: 20px;
     }
-    a { color: cyan; }
-    img { width: 100%; border-radius: 10px; }
+    a {
+      color: cyan;
+      text-decoration: none;
+    }
+    img {
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      max-width: 400px;
+      display: block;
+    }
     .episode {
       background: #222;
       margin: 8px 0;
@@ -27,21 +36,28 @@
   <div id="anime-detail">Memuat...</div>
 
   <script>
+    const params = new URLSearchParams(window.location.search);
+    const slug = params.get("slug");
+
     async function loadAnime() {
-      const params = new URLSearchParams(window.location.search);
-      const slug = params.get("slug");
       if (!slug) {
         document.getElementById("anime-detail").textContent = "Anime tidak ditemukan.";
         return;
       }
+
       const res = await fetch(`https://www.sankavollerei.com/anime/stream/anime/${slug}`);
-      const data = await res.json();
-      const anime = data;
+      const anime = await res.json();
+
+      let imgUrl = anime.thumbnail;
+      if (imgUrl && !imgUrl.startsWith("http")) {
+        imgUrl = "https://www.sankavollerei.com" + imgUrl;
+      }
 
       const container = document.getElementById("anime-detail");
       container.innerHTML = `
         <h1>${anime.title}</h1>
-        <img src="${anime.thumbnail}" alt="${anime.title}">
+        <img src="${imgUrl}" alt="${anime.title}" 
+             onerror="this.src='https://via.placeholder.com/400x600?text=No+Image'">
         <p>${anime.synopsis || "Tidak ada sinopsis."}</p>
         <h3>Daftar Episode</h3>
         <div id="episodes"></div>
@@ -55,6 +71,7 @@
         epContainer.appendChild(div);
       });
     }
+
     loadAnime();
   </script>
 </body>
