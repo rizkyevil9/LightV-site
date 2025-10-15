@@ -7,7 +7,7 @@ const loading = document.getElementById("loading");
 let selectedFile = null;
 
 // === Ganti ini dengan token kamu ===
-const HF_TOKEN = "ISI_TOKEN_KAMU_DI_SINI"; // contoh: "hf_abcd1234xyz"
+const HF_TOKEN = "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"; // contoh: "hf_abcd1234xyz"
 
 // upload handler
 input.addEventListener("change", () => {
