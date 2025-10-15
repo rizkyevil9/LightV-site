@@ -32,7 +32,7 @@ btn.addEventListener("click", async () => {
   const blob = await selectedFile.arrayBuffer();
 
   const response = await fetch(
-    "https://api-inference.huggingface.co/models/Salesforce/blip-image-captioning-large",
+    "https://cors-anywhere.huggingface.co/api-inference.huggingface.co/models/Salesforce/blip-image-captioning-large",
     {
       headers: { 
         Authorization: `Bearer ${HF_TOKEN}`,
