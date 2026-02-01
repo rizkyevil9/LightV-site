@@ -1,59 +1,92 @@
-const input = document.getElementById("imageInput");
-const preview = document.getElementById("preview");
-const btn = document.getElementById("generateBtn");
-const result = document.getElementById("result");
-const loading = document.getElementById("loading");
+// Minimal JS: mobile menu toggle, load students.json, student modal
+document.addEventListener('DOMContentLoaded', function () {
+  // Mobile menu toggles
+  document.querySelectorAll('.menu-toggle').forEach(btn => {
+    btn.addEventListener('click', function () {
+      const navId = btn.getAttribute('aria-controls');
+      const nav = document.getElementById(navId);
+      if (!nav) return;
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', String(!expanded));
+      if (nav.hasAttribute('hidden')) {
+        nav.removeAttribute('hidden');
+      } else {
+        nav.setAttribute('hidden', '');
+      }
+    });
+  });
 
-let selectedFile = null;
+  // Load students if #students-grid exists
+  const grid = document.getElementById('students-grid');
+  if (grid) {
+    fetch('data/students.json').then(resp => resp.json()).then(data => {
+      data.forEach((s, idx) => {
+        const card = document.createElement('article');
+        card.className = 'card';
+        // thumbnail approach: try thumb file first
+        const thumb = s.photo.replace('.jpg','_thumb.jpg').replace('.png','_thumb.png');
+        const img = document.createElement('img');
+        img.src = thumb;
+        img.onerror = function(){ this.src = s.photo; };
+        img.alt = s.alt || `Foto ${s.name} — profil`;
+        img.loading = 'lazy';
+        img.setAttribute('data-index', idx);
+        img.style.cursor = 'pointer';
 
-// === Ganti ini dengan token kamu ===
-const HF_TOKEN = "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"; // contoh: "hf_abcd1234xyz"
+        const h3 = document.createElement('h3');
+        h3.textContent = s.name;
 
-// upload handler
-input.addEventListener("change", () => {
-  const file = input.files[0];
-  if (!file) return;
-  selectedFile = file;
-  const reader = new FileReader();
-  reader.onload = e => {
-    preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
-  };
-  reader.readAsDataURL(file);
-  btn.disabled = false;
-});
+        const p = document.createElement('p');
+        p.textContent = s.note;
 
-btn.addEventListener("click", async () => {
-  if (!selectedFile) return;
+        card.appendChild(img);
+        card.appendChild(h3);
+        card.appendChild(p);
+        grid.appendChild(card);
 
-  result.classList.add("hidden");
-  loading.classList.remove("hidden");
-  btn.disabled = true;
-
-  const blob = await selectedFile.arrayBuffer();
-
-  const response = await fetch(
-    "https://cors-anywhere.huggingface.co/api-inference.huggingface.co/models/Salesforce/blip-image-captioning-large",
-    {
-      headers: { 
-        Authorization: `Bearer ${HF_TOKEN}`,
-        "Content-Type": "application/octet-stream"
-      },
-      method: "POST",
-      body: blob,
-    }
-  );
-
-  const data = await response.json();
-  loading.classList.add("hidden");
-  btn.disabled = false;
-
-  if (data.error) {
-    result.innerHTML = `<p>Terjadi kesalahan: ${data.error}</p>`;
-    result.classList.remove("hidden");
-    return;
+        img.addEventListener('click', function () {
+          openModal(s);
+        });
+      });
+    }).catch(err => {
+      grid.innerHTML = '<p class="muted">Gagal memuat data siswa.</p>';
+      console.error(err);
+    });
   }
 
-  const text = data[0]?.generated_text || "Tidak bisa mengenali gambar.";
-  result.innerHTML = `<h3>Prompt:</h3><p>${text}</p>`;
-  result.classList.remove("hidden");
+  // Modal handling
+  const modal = document.getElementById('student-modal');
+  const modalPhoto = document.getElementById('modal-photo');
+  const modalName = document.getElementById('modal-name');
+  const modalNickname = document.getElementById('modal-nickname');
+  const modalNote = document.getElementById('modal-note');
+  const modalQuote = document.getElementById('modal-quote');
+  const modalDownload = document.getElementById('modal-download');
+  const modalCloseButtons = document.querySelectorAll('#modal-close,#modal-close-2');
+
+  function openModal(student) {
+    if (!modal) return;
+    modalPhoto.src = student.photo;
+    modalPhoto.alt = student.alt || `Foto ${student.name} — profil kelas`;
+    modalName.textContent = student.name;
+    modalNickname.textContent = student.nickname ? `Julukan: ${student.nickname}` : '';
+    modalNote.textContent = student.note || '';
+    modalQuote.textContent = student.quote || '';
+    modalDownload.href = student.photo;
+    modal.setAttribute('aria-hidden','false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    if (!modal) return;
+    modal.setAttribute('aria-hidden','true');
+    document.body.style.overflow = '';
+    // clear to avoid stale images
+    modalPhoto.src = '';
+  }
+
+  modalCloseButtons.forEach(b => b.addEventListener('click', closeModal));
+  modal.addEventListener('click', function (e) {
+    if (e.target === modal) closeModal();
+  });
 });
