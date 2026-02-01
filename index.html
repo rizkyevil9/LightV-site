@@ -1,29 +1,86 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Image to Prompt</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Kelas XII IPA 3 — Kenangan Angkatan 2024</title>
+  <meta name="description" content="Digital yearbook Kelas XII IPA 3 — kumpulan foto, pesan, dan momen untuk dikenang. Simple, cepat, dan awet.">
+  <!-- Open Graph -->
+  <meta property="og:title" content="Kelas XII IPA 3 — Kenangan">
+  <meta property="og:description" content="Kenangan lengkap Kelas XII IPA 3 — foto, pesan singkat, dan timeline momen penting.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="assets/img/og-image.jpg">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <h1>Image to Prompt Generator</h1>
-    <p>Kirim gambar, dan AI akan membuat prompt untukmu.</p>
-
-    <div class="upload-box" id="drop-zone">
-      <input type="file" id="imageInput" accept="image/*">
-      <p>Tarik gambar ke sini atau klik untuk memilih</p>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html">Kelas XII IPA 3</a>
+      <button id="menu-toggle" class="menu-toggle" aria-expanded="false" aria-controls="main-nav" aria-label="Buka menu">☰</button>
+      <nav id="main-nav" class="main-nav" hidden>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="students.html">Daftar Siswa</a></li>
+          <li><a href="teachers.html">Wali Kelas & Guru</a></li>
+          <li><a href="gallery.html">Galeri</a></li>
+          <li><a href="messages.html">Pesan & Kesan</a></li>
+        </ul>
+      </nav>
     </div>
+  </header>
 
-    <div id="preview"></div>
+  <main>
+    <section class="hero">
+      <div class="container">
+        <h1>Kelas XII IPA 3 — Kenangan Angkatan 2024</h1>
+        <p class="subtitle">Satu kelas. Satu cerita. Kenangan yang tetap utuh.</p>
+        <p class="intro">Selamat datang di halaman kenang-kenangan Kelas XII IPA 3. Situs ini dibuat untuk menyimpan momen-momen penting, foto, dan pesan singkat dari teman-teman dan guru. Desain sederhana agar tetap mudah diakses dalam beberapa tahun ke depan.</p>
 
-    <button id="generateBtn" disabled>Generate Prompt</button>
+        <div class="cta-row">
+          <a class="btn" href="students.html">Lihat Siswa</a>
+          <a class="btn ghost" href="gallery.html">Buka Galeri</a>
+          <a class="btn ghost" href="messages.html">Pesan & Kesan</a>
+        </div>
+      </div>
+    </section>
 
-    <div id="loading" class="hidden">⏳ Sedang memproses...</div>
-    <div id="result" class="hidden"></div>
-  </div>
+    <section class="summary">
+      <div class="container">
+        <h2>Ringkasan singkat</h2>
+        <ul class="summary-list">
+          <li><strong>Jumlah siswa:</strong> 5</li>
+          <li><strong>Waktu:</strong> Angkatan 2024</li>
+          <li><strong>Format:</strong> Web statis — cepat & awet</li>
+        </ul>
+      </div>
+    </section>
 
-  <script src="script.js"></script>
+    <section class="timeline">
+      <div class="container">
+        <h2>Timeline momen penting</h2>
+        <ol class="timeline-list" aria-label="Timeline acara penting">
+          <li><time datetime="2023-08-20">20 Agustus 2023</time> — Pembukaan praktikum semester.</li>
+          <li><time datetime="2023-11-12">12 November 2023</time> — Outbond & kegiatan kekompakan kelas.</li>
+          <li><time datetime="2024-04-03">3 April 2024</time> — Pentas seni angkatan.</li>
+          <li><time datetime="2024-06-10">10 Juni 2024</time> — Foto kelas formal & dokumentasi.</li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="download-cta">
+      <div class="container">
+        <a class="btn" href="assets/img/class_photo_hd.jpg" download="Foto_Kelas_XII_IPA3_HD.jpg">Download foto kelas HD</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>Ada tambahan foto atau koreksi? Hubungi panitia: panitia@kelas12ipa3.example</p>
+      <p>© 2024 Kelas XII IPA 3 — Kenangan Angkatan 2024 · <a href="assets/img/class_photo_hd.jpg" download>Download foto kelas HD</a> · Kontak: panitia@kelas12ipa3.example</p>
+    </div>
+  </footer>
+
+  <script src="scripts.js" defer></script>
 </body>
 </html>
