@@ -1,0 +1,164 @@
+:root{
+  --bg: #ffffff;
+  --muted: #6b7280;
+  --text: #0f172a;
+  --accent: #2b6cb0; /* sekolah color */
+  --max-width: 1024px;
+  --radius: 10px;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  line-height: 1.45;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  font-size:16px;
+}
+
+.container{
+  width:100%;
+  max-width:var(--max-width);
+  margin:0 auto;
+  padding:1rem;
+}
+
+/* header */
+.site-header{
+  border-bottom:1px solid #e6e9ef;
+  background:#fff;
+  position:sticky;
+  top:0;
+  z-index:20;
+}
+.header-inner{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1rem;
+}
+.brand{
+  font-weight:700;
+  color:var(--accent);
+  text-decoration:none;
+  font-size:1.05rem;
+}
+.menu-toggle{
+  background:none;
+  border:0;
+  font-size:1.35rem;
+  padding:0.35rem 0.5rem;
+  display:inline-flex;
+  align-items:center;
+}
+
+/* nav */
+.main-nav ul{
+  list-style:none;
+  margin:0;
+  padding:0;
+  display:flex;
+  gap:0.5rem;
+}
+.main-nav a{display:block;text-decoration:none;padding:0.5rem 0.6rem;color:var(--text)}
+.main-nav a:hover{color:var(--accent)}
+
+/* hero */
+.hero{
+  padding:2rem 0;
+  background:linear-gradient(180deg, rgba(43,108,176,0.06), transparent);
+}
+.hero h1{margin:0 0 0.25rem;font-size:1.35rem}
+.subtitle{margin:0 0 1rem;color:var(--muted)}
+.intro{max-width:54ch;margin-bottom:1rem;color:var(--text)}
+
+/* CTA */
+.cta-row{display:flex;flex-wrap:wrap;gap:0.5rem}
+.btn{
+  display:inline-block;
+  background:var(--accent);
+  color:#fff;
+  padding:0.5rem 0.8rem;
+  border-radius:8px;
+  text-decoration:none;
+  font-weight:600;
+}
+.btn.ghost{
+  background:transparent;
+  color:var(--accent);
+  border:1px solid var(--accent);
+}
+
+/* summary */
+.summary{padding:1rem 0}
+.summary-list{list-style:none;padding:0;margin:0;display:grid;gap:0.25rem}
+.summary-list li{background:#fbfdff;padding:0.6rem;border-radius:8px;border:1px solid #eef4fb;}
+
+/* timeline */
+.timeline-list{padding-left:1rem}
+
+/* grid (students) */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:0.75rem;
+  margin-top:1rem;
+}
+.card{
+  background:#fff;
+  border:1px solid #eef2f6;
+  border-radius:10px;
+  padding:0.6rem;
+  text-align:center;
+}
+.card img{
+  width:100%;
+  height:160px;
+  object-fit:cover;
+  border-radius:8px;
+  display:block;
+}
+.card h3{margin:0.5rem 0 0.25rem;font-size:1rem}
+.card p{margin:0;color:var(--muted);font-size:0.95rem}
+
+/* modal */
+.modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:1rem;background:rgba(8,12,20,0.45);visibility:hidden;opacity:0;transition:opacity .18s,visibility .18s}
+.modal[aria-hidden="false"]{visibility:visible;opacity:1}
+.modal-content{background:#fff;border-radius:12px;max-width:920px;width:100%;display:flex;flex-direction:column;overflow:hidden}
+.modal-photo{width:100%;height:320px;object-fit:cover}
+.modal-body{padding:1rem}
+.modal-close{position:absolute;right:1rem;top:1rem;background:#fff;border:0;font-size:1.1rem;padding:0.3rem;border-radius:50%}
+
+/* teachers, messages, gallery */
+.teachers-list{display:grid;gap:0.75rem}
+.teacher-card{background:#fff;padding:0.8rem;border-radius:8px;border:1px solid #eef2f6}
+
+.gallery-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0.75rem}
+.gallery-item img{width:100%;height:160px;object-fit:cover;border-radius:8px}
+.gallery-item figcaption{font-size:0.95rem;margin-top:0.4rem;color:var(--muted)}
+
+.messages-list{display:grid;gap:0.6rem}
+.message{background:#fff;padding:0.75rem;border-radius:8px;border:1px solid #eef2f6}
+.message h3{margin:0 0 0.25rem}
+.text-limit{display:-webkit-box;-webkit-line-clamp:3;overflow:hidden;-webkit-box-orient:vertical}
+
+/* small screen base styles already mobile-first */
+.note, .muted{color:var(--muted);font-size:0.9rem}
+.lead{color:var(--muted);margin-bottom:0.5rem}
+
+/* footer */
+.site-footer{padding:1rem 0;border-top:1px solid #eef2f6;margin-top:2rem}
+.site-footer p{margin:0.25rem 0;font-size:0.95rem;color:var(--muted)}
+
+/* responsive */
+@media(min-width:700px){
+  .grid{grid-template-columns:repeat(3,1fr)}
+  .gallery-grid{grid-template-columns:repeat(3,1fr)}
+  .modal-content{flex-direction:row}
+  .modal-photo{width:50%;height:100%}
+  .modal-body{width:50%}
+}
