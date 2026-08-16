@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Light V Image AI</title>
+  <meta name="description" content="Generator gambar AI ringan berbasis Pollinations API." />
+  <style>
+    :root{color-scheme:dark;--bg:#08090c;--panel:#111318;--line:#242833;--text:#f4f5f7;--muted:#9da3af;--accent:#7c5cff;--accent2:#9b84ff;--danger:#ff6b7a}
+    *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#171226 0,#08090c 42%);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--text)}
+    .wrap{max-width:980px;margin:auto;padding:28px 16px 56px}.top{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:22px}.brand{font-size:22px;font-weight:800;letter-spacing:-.4px}.badge{font-size:12px;color:#cfc8ff;border:1px solid #3b3363;background:#151026;padding:6px 9px;border-radius:999px}
+    .grid{display:grid;grid-template-columns:340px 1fr;gap:16px}.card{background:rgba(17,19,24,.94);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 12px 40px rgba(0,0,0,.2)}
+    label{display:block;font-size:12px;color:var(--muted);margin:0 0 7px}.field{margin-bottom:14px}textarea,input,select{width:100%;background:#0c0e13;border:1px solid #2b303b;color:var(--text);border-radius:12px;padding:11px 12px;outline:none;font:inherit}textarea{min-height:145px;resize:vertical}textarea:focus,input:focus,select:focus{border-color:var(--accent2);box-shadow:0 0 0 3px rgba(124,92,255,.12)}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.actions{display:flex;gap:9px}.btn{border:0;border-radius:12px;padding:11px 14px;font-weight:750;cursor:pointer}.primary{background:var(--accent);color:#fff;flex:1}.primary:hover{background:#6d4cf2}.ghost{background:#191c24;color:#dfe3ea;border:1px solid #2c313d}.status{font-size:12px;color:var(--muted);margin-top:9px;min-height:16px}.error{color:#ff8a96}.ok{color:#89e8b4}
+    .preview{min-height:560px;display:flex;align-items:center;justify-content:center;overflow:hidden}.preview img{width:100%;height:auto;display:block;border-radius:14px;border:1px solid #262b35}.empty{text-align:center;color:var(--muted);padding:45px 30px}.empty .icon{font-size:50px;margin-bottom:12px}.small{font-size:11px;color:#767d8a;line-height:1.5;margin-top:10px}.download{display:none;margin-top:10px;width:100%}
+    .foot{margin-top:14px;color:#727987;font-size:11px;text-align:center}.link{color:#b4a6ff;text-decoration:none}
+    @media(max-width:800px){.grid{grid-template-columns:1fr}.preview{min-height:320px}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><div class="brand">Light V Image AI</div><div class="badge">Lightweight • AI Generator</div></div>
+  <div class="grid">
+    <section class="card">
+      <div class="field"><label for="prompt">PROMPT</label><textarea id="prompt" placeholder="Contoh: anime girl sitting in a quiet Japanese village at sunset, cinematic lighting, detailed background"></textarea></div>
+      <div class="row">
+        <div class="field"><label for="model">MODEL</label><select id="model"><option value="zimage">zimage — cepat</option><option value="flux">flux — serbaguna</option><option value="seedream5">seedream5 — detail</option><option value="nanobanana-2">nanobanana-2</option><option value="gptimage">gptimage</option></select></div>
+        <div class="field"><label for="ratio">RASIO</label><select id="ratio"><option value="1024x1024">1:1</option><option value="1024x1280">4:5</option><option value="1280x720">16:9</option><option value="720x1280">9:16</option><option value="1536x1024">3:2</option></select></div>
+      </div>
+      <div class="field"><label for="steps">PROMPT STYLE</label><select id="style"><option value="">Tidak ada tambahan</option><option value="masterpiece, highly detailed, cinematic lighting">Cinematic</option><option value="anime style, detailed eyes, beautiful background">Anime</option><option value="photorealistic, natural lighting, realistic textures">Photorealistic</option><option value="digital illustration, clean lineart, vibrant details">Illustration</option></select></div>
+      <div class="actions"><button class="btn primary" id="generate">Generate Image</button><button class="btn ghost" id="clear">Clear</button></div>
+      <button class="btn ghost download" id="download">Download PNG/JPG</button>
+      <div class="status" id="status"></div>
+      <div class="small">API key disimpan di server melalui environment variable <b>POLLINATIONS_API_KEY</b>. Jangan menaruh secret key di HTML atau GitHub.</div>
+    </section>
+    <section class="card preview" id="preview"><div class="empty"><div class="icon">✦</div><div>Hasil gambar akan muncul di sini.</div></div></section>
+  </div>
+  <div class="foot">Powered by Pollinations API • <a class="link" href="https://gen.pollinations.ai/docs" target="_blank" rel="noreferrer">API Docs</a></div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+let currentObjectUrl='';
+function setStatus(text,cls=''){const el=$('status');el.textContent=text;el.className='status '+cls;}
+function composedPrompt(){const p=$('prompt').value.trim(), s=$('style').value;return s ? `${p}, ${s}` : p}
+async function generate(){
+  const prompt=composedPrompt();
+  if(!prompt){setStatus('Isi prompt terlebih dahulu.','error');return;}
+  const btn=$('generate');btn.disabled=true;btn.textContent='Generating…';$('download').style.display='none';
+  setStatus('Menghubungi image API…');
+  try{
+    const res=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt,model:$('model').value,size:$('ratio').value})});
+    const data=await res.json().catch(()=>({error:'Respons server tidak valid.'}));
+    if(!res.ok) throw new Error(data.error||`HTTP ${res.status}`);
+    if(!data.image) throw new Error('Server tidak mengembalikan gambar.');
+    const img=document.createElement('img');img.alt='Generated image';img.src=data.image;
+    $('preview').replaceChildren(img);setStatus('Selesai.','ok');$('download').style.display='block';
+    currentObjectUrl=data.image;
+  }catch(e){setStatus(e.message||'Gagal membuat gambar.','error');}
+  finally{btn.disabled=false;btn.textContent='Generate Image'}
+}
+$('generate').addEventListener('click',generate);$('prompt').addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter')generate()});
+$('clear').addEventListener('click',()=>{$('prompt').value='';$('preview').innerHTML='<div class="empty"><div class="icon">✦</div><div>Hasil gambar akan muncul di sini.</div></div>';setStatus('');$('download').style.display='none'});
+$('download').addEventListener('click',()=>{if(!currentObjectUrl)return;const a=document.createElement('a');a.href=currentObjectUrl;a.download='light-v-image-ai.jpg';a.target='_blank';a.click()});
+</script>
+</body>
+</html>
