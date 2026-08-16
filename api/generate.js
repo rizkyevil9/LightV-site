@@ -51,7 +51,10 @@ module.exports = async (req, res) => {
     const model = body.model || 'zimage';
     const size = body.size || '1024x1024';
 
-    if (typeof prompt !== 'string' || prompt.trim().length < 2) {
+    if (
+      typeof prompt !== 'string' ||
+      prompt.trim().length < 2
+    ) {
       return json(res, 400, {
         error: 'Prompt tidak valid.'
       });
@@ -69,15 +72,17 @@ module.exports = async (req, res) => {
       'https://gen.pollinations.ai/v1/images/generations',
       {
         method: 'POST',
+
         headers: {
           'Authorization': `Bearer ${apiKey}`,
           'Content-Type': 'application/json'
         },
+
         body: JSON.stringify({
-          model: safeModel,
           prompt: prompt.trim(),
-          size: safeSize,
-          n: 1
+          model: safeModel,
+          n: 1,
+          size: safeSize
         })
       }
     );
@@ -97,36 +102,32 @@ module.exports = async (req, res) => {
         error:
           data?.error?.message ||
           data?.error ||
-          `Pollinations API HTTP ${response.status}`,
-        status: response.status
+          `Pollinations API HTTP ${response.status}`
       });
     }
 
-    const image =
-      data?.data?.[0]?.url ||
-      data?.data?.[0]?.b64_json;
+    const result = data?.data?.[0];
 
-    if (!image) {
+    if (!result) {
       return json(res, 502, {
-        error: 'Pollinations tidak mengembalikan gambar.',
-        response: data
+        error: 'Pollinations tidak mengembalikan data gambar.'
       });
     }
 
-    if (image.startsWith('data:')) {
+    if (result.b64_json) {
       return json(res, 200, {
-        image
+        image: `data:image/png;base64,${result.b64_json}`
       });
     }
 
-    if (image.startsWith('http')) {
+    if (result.url) {
       return json(res, 200, {
-        image
+        image: result.url
       });
     }
 
     return json(res, 502, {
-      error: 'Format gambar dari API tidak dikenali.'
+      error: 'Format gambar dari Pollinations tidak dikenali.'
     });
 
   } catch (error) {
