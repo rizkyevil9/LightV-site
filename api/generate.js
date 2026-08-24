@@ -3,7 +3,8 @@ const ALLOWED_MODELS = new Set([
   "flux",
   "seedream5",
   "nanobanana-2",
-  "gptimage"
+  "gptimage",
+  "sana"
 ]);
 
 const ALLOWED_SIZES = new Set([
@@ -29,15 +30,6 @@ module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
     return sendJson(res, 405, {
       error: "Method not allowed"
-    });
-  }
-
-  const apiKey = process.env.POLLINATIONS_API_KEY;
-
-  if (!apiKey) {
-    return sendJson(res, 500, {
-      error:
-        "POLLINATIONS_API_KEY belum tersedia di Vercel Environment Variables."
     });
   }
 
@@ -72,7 +64,7 @@ module.exports = async function handler(req, res) {
     const { width, height } = sizeToDimensions(size);
 
     const url = new URL(
-      `https://gen.pollinations.ai/image/${encodeURIComponent(prompt)}`
+      `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}`
     );
 
     url.searchParams.set("model", model);
@@ -83,7 +75,6 @@ module.exports = async function handler(req, res) {
     const upstream = await fetch(url, {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${apiKey}`,
         Accept: "image/*"
       }
     });
