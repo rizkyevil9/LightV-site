@@ -32,15 +32,6 @@ module.exports = async function handler(req, res) {
     });
   }
 
-  const apiKey = process.env.POLLINATIONS_API_KEY;
-
-  if (!apiKey) {
-    return sendJson(res, 500, {
-      error:
-        "POLLINATIONS_API_KEY belum tersedia di Vercel Environment Variables."
-    });
-  }
-
   try {
     const body = req.body || {};
 
@@ -72,7 +63,7 @@ module.exports = async function handler(req, res) {
     const { width, height } = sizeToDimensions(size);
 
     const url = new URL(
-      `https://gen.pollinations.ai/image/${encodeURIComponent(prompt)}`
+      `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}`
     );
 
     url.searchParams.set("model", model);
@@ -83,7 +74,6 @@ module.exports = async function handler(req, res) {
     const upstream = await fetch(url, {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${apiKey}`,
         Accept: "image/*"
       }
     });
@@ -104,16 +94,6 @@ module.exports = async function handler(req, res) {
           parsed?.error ||
           detail;
       } catch (_) {}
-
-      if (upstream.status === 401) {
-        detail =
-          "API key Pollinations tidak valid atau tidak diterima.";
-      }
-
-      if (upstream.status === 402) {
-        detail =
-          "Pollen/budget Pollinations tidak mencukupi untuk request ini.";
-      }
 
       if (upstream.status === 429) {
         detail =
