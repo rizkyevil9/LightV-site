@@ -71,6 +71,16 @@ module.exports = async function handler(req, res) {
     url.searchParams.set("height", String(height));
     url.searchParams.set("nologo", "true");
 
+    // Add optional negative prompt
+    if (typeof body.negative_prompt === "string" && body.negative_prompt.trim().length > 0) {
+      url.searchParams.set("negative_prompt", body.negative_prompt.trim());
+    }
+
+    // Add optional seed
+    if (typeof body.seed === "number" || typeof body.seed === "string") {
+       url.searchParams.set("seed", String(body.seed));
+    }
+
     const upstream = await fetch(url, {
       method: "GET",
       headers: {
@@ -130,7 +140,8 @@ module.exports = async function handler(req, res) {
       `data:${mime};base64,${buffer.toString("base64")}`;
 
     return sendJson(res, 200, {
-      image
+      image,
+      seed: url.searchParams.get("seed")
     });
 
   } catch (error) {
