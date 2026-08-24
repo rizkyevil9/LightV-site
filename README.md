@@ -1,26 +1,33 @@
-# Light V Image AI
+# LightV WhatsApp Bot
 
-Website generator gambar AI ringan dengan frontend statis + Vercel Serverless Function.
+A highly modular, plugin-based WhatsApp bot architecture targeting 1000+ real features.
 
-## Deploy tercepat
+## Requirements
+- Node.js >= 18
 
-1. Upload folder ini ke GitHub.
-2. Import repository ke Vercel.
-3. Di **Project Settings → Environment Variables**, buat:
-   - Name: `POLLINATIONS_API_KEY`
-   - Value: API key Pollinations milikmu (`sk_...`)
-4. Deploy.
-5. Buka URL Vercel. Selesai.
+## Installation
 
-## Kenapa memakai backend?
-API key rahasia tidak diletakkan di `index.html`, sehingga pengunjung tidak bisa melihat secret key hanya dari source page.
+1. Clone repository
+2. Run `npm install`
+3. Copy `.env.example` to `.env` and fill in configurations.
+4. Run `npm start` (or `node index.js`)
 
-## Local test
+## Architecture
+This bot uses a plugin architecture. The core handles WhatsApp connections (Baileys), Database (SQLite), Command Parsing, and Plugin Management.
+Features should be implemented as individual files inside the `plugins/` directory.
 
-```bash
-npm install
-npx vercel dev
-```
+### Directory Structure
+- `core/` - Core bot mechanics (bot connection, parsing, db, plugin loading)
+- `config/` - Configuration settings
+- `plugins/` - Feature modules (AI, Downloader, Utility, etc.)
+- `data/` - SQLite database and Baileys session data
+- `templates/` - Helper scripts (e.g., creating plugins)
 
-## Model
-Model dipilih dari beberapa model yang tersedia pada Pollinations. Daftar model dapat berubah; server sengaja memakai allowlist agar input dari browser tidak bebas memasukkan parameter sembarangan.
+## Plugin System
+
+Create a new plugin using:
+\`\`\`bash
+npm run create-plugin -- --name=myfeature --category=utility
+\`\`\`
+
+This creates a hot-reloadable module in `plugins/utility/myfeature.js`.
